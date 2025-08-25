@@ -1,21 +1,26 @@
-FROM node:15 as builder
+# Etapa de build
+FROM node:15 AS builder
 
-WORKDIR
+WORKDIR /app
 
-COPY
+COPY package*.json ./
 
-RUN 
+RUN npm install
 
-COPY
+COPY . .
 
-RUN 
+RUN npm run build
 
-FROM
+# Etapa de produção (usa imagem leve do nginx ou serve com node)
+FROM nginx:alpine
 
-WORKDIR
+# Copia os artefatos de build para o nginx
+COPY --from=builder /app/build /usr/share/nginx/html
 
-COPY
+# Expõe porta 8080 (pra bater com o exercício)
+EXPOSE 8080
 
-RUN 
+# Substitui a config default do nginx para ouvir na 8080
+RUN sed -i 's/80/8080/g' /etc/nginx/conf.d/default.conf
 
-ENTRYPOINT 
+CMD ["nginx", "-g", "daemon off;"]
